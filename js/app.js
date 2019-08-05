@@ -34,16 +34,17 @@ function shuffle(array) {
 }
 
 function reset() {
-  // Resets the timer, clears the open cards list, and shuffles the cards
-  startTime = performance.now();
-  openCards = []
-  movesElem.innerHTML = moves = matches = 0;
-  stars.innerHTML = `${star.repeat(3)}\n`;
+  // Shuffles cards and resets game stats.
   let shuffled = shuffle(Array.from(cards));
   shuffled.forEach(function(card) {
     card.className = "card";
     deck.appendChild(card);
   });
+
+  movesElem.innerHTML = moves = matches = 0;
+  stars.innerHTML = `${star.repeat(3)}\n`;
+  openCards = []
+  startTime = performance.now();
 }
 
 /* Reset buttons event listeners */
@@ -80,13 +81,13 @@ deck.addEventListener('click', function(event) {
 function faceUp(card) {
   // Determins wether a card is the first or second of a pair, or if it's not a flippable card.=
   for (cl of card.classList)
-    if (['open', 'show', 'match'].includes(cl)) return;
+    if (['open', 'show', 'match'].includes(cl)) return; // Card is not valid
   openCards.push(card);
-  if (openCards.length > 2) openCards.pop();
-  else if (openCards.length == 2) {
+  if (openCards.length > 2) openCards.pop();    // Too many cards.
+  else if (openCards.length == 2) {             // End of turn
     card.classList.add('open', 'show');
     setTimeout(calcTurn, 500)
-  } else card.classList.add('open', 'show');
+  } else card.classList.add('open', 'show');    // Start of turn
 }
 
 function calcTurn() {
