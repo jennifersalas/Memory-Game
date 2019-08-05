@@ -7,10 +7,9 @@ const cards = document.querySelectorAll('.card');
 const stars = document.querySelector('.stars');
 const star = `\n${stars.firstElementChild.outerHTML}`;
 const movesElem = document.querySelector('.moves');
-let moves = 3;
-let matches = 1;
 let openCards = [document.querySelector('.card.open.show')];
 let winPopup = document.querySelector('.win-popup');
+let move, matches, startTime;
 
 /*
  * Display the cards on the page
@@ -35,6 +34,8 @@ function shuffle(array) {
 }
 
 function reset() {
+  // Resets the timer, clears the open cards list, and shuffles the cards
+  startTime = performance.now();
   openCards = []
   movesElem.innerHTML = moves = matches = 0;
   stars.innerHTML = `${star.repeat(3)}\n`;
@@ -68,15 +69,18 @@ document.querySelector('.start-over').addEventListener('click', function() {
 /*
  * Flip card event listener
  */
- deck.addEventListener('click', function(event) {
-   if (event.target.nodeName === "LI") {
-     faceUp(event.target);
-   }
- });
+deck.addEventListener('click', function(event) {
+  // Sets LI elements as clickable cards
+  if (event.target.nodeName === "LI") {
+    faceUp(event.target);
+  }
+});
 
 
 function faceUp(card) {
-  for (cl of card.classList) if (['open', 'show', 'match'].includes(cl)) return;
+  // Determins wether a card is the first or second of a pair, or if it's not a flippable card.=
+  for (cl of card.classList)
+    if (['open', 'show', 'match'].includes(cl)) return;
   openCards.push(card);
   if (openCards.length > 2) openCards.pop();
   else if (openCards.length == 2) {
@@ -86,6 +90,7 @@ function faceUp(card) {
 }
 
 function calcTurn() {
+  // Determins if two cards are a match and if the game is won. Resets the turn.
   if (openCards[0].firstElementChild.className === openCards[1].firstElementChild.className) {
     openCards[0].classList.add('match');
     openCards[1].classList.add('match');
@@ -107,6 +112,8 @@ function calcTurn() {
 }
 
 function win() {
+  // Updates the user win stats in the DOM.
+  document.querySelector('.time').innerHTML = ((performance.now() - startTime) / 1000).toFixed(2);
   document.querySelector('.win-moves').innerHTML = moves;
   document.querySelector('.win-stars').innerHTML = stars.childElementCount;
   winPopupAnimation()
@@ -122,7 +129,7 @@ function winPopupAnimation() {
     winPopup.classList.add('active');
   }, 200);
   setTimeout(function() {
-    document.querySelector('.container').style.display = "none";
+    document.querySelector('.container').removeAttribute("style");
   }, 400)
 }
 
@@ -134,3 +141,5 @@ function winPopdownAnimation() {
     winPopup.style.display = "none";
   }, 400);
 }
+
+reset();
